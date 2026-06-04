@@ -15,6 +15,9 @@ export const metadata: Metadata = {
     template: "%s | AUI | Blogo - A blog for developers",
   },
   description: "A blog for developers by developers!",
+  icons: {
+    icon: "/favicon.ico",
+  },
   openGraph: {
     title: "AUI | Blogo - A blog for developers",
     description: "A blog for developers by developers!",
