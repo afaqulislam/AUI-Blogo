@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="public/favicon.ico" alt="AUI Blogo Favicon" width="80" />
+
 <h1>
   <br/>
   🚀 AUI | Blogo
@@ -144,7 +146,6 @@ aui-blogo/
 │   │   ├── Provider.tsx           # next-themes ThemeProvider wrapper
 │   │   ├── helpers.ts             # Utility: slugify()
 │   │   └── interface.tsx          # TypeScript interfaces: Post, Tag, Comment
-│   ├── favicon.ico
 │   ├── robots.ts                  # Auto-generated robots.txt rules
 │   └── sitemap.ts                 # Auto-generated XML sitemap from Sanity posts
 │
@@ -163,6 +164,7 @@ aui-blogo/
 │   └── schemaTypes/               # Additional schema type definitions
 │
 ├── public/                        # Static assets
+│   └── favicon.ico
 ├── .env.example                   # Environment variable template
 ├── .env.local                     # Local environment variables (git-ignored)
 ├── next.config.js                 # Next.js config: Sanity CDN image remote patterns
