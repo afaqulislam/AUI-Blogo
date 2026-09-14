@@ -4,46 +4,53 @@ import { client } from "@/sanity/lib/client";
 import { Metadata } from "next";
 import Link from "next/link";
 import React from "react";
+import EmptyState from "@/app/components/EmptyState";
+import { dedupeTags } from "@/app/utils/helpers";
+import { RiHashtag } from "react-icons/ri";
+import { cache } from "react";
 
-async function getAllTags() {
+const getAllTags = cache(async () => {
   const query = `
-  *[_type == "tag"] {
+  *[_type == "tag"] | order(name asc) {
     name,
     slug,
-    _id,
-    "postCount": count(*[_type == "post" && references("tags", ^._id)])
+    _id
   }
   `;
   const tags = client.fetch(query);
   return tags;
-}
+});
 
 export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Tags",
-  // title: {
-  //   absolute: "TAGS",
-  // },
-  description: "Search for posts by tags on the blog"
-}
+  description: "Browse all article tags on AUI Blogo",
+};
 
 const page = async () => {
   const tags: Tag[] = await getAllTags();
-  console.log(tags, "tags");
   return (
     <div>
       <Header title="Tags" />
-      <div>
-        {tags?.length > 0 &&
-          tags?.map((tag) => (
+      {tags?.length > 0 ? (
+        <div className="flex flex-wrap gap-3 justify-center">
+          {dedupeTags(tags).map((tag) => (
             <Link key={tag?._id} href={`/tag/${tag.slug.current}`}>
-              <div className="mb-2 p-2 text-sm lowercase dark:bg-gray-950 border dark:border-gray-900 hover:text-purple-500">
-                #{tag.name} ({tag?.postCount})
-              </div>
+              <span className="flex items-center gap-1 px-4 py-2 text-sm rounded-full border border-gray-300 dark:border-purple-900 hover:bg-purple-500 hover:text-white hover:border-purple-500 transition-all">
+                <RiHashtag className="w-4 h-4" />
+                {tag.name}
+              </span>
             </Link>
           ))}
-      </div>
+        </div>
+      ) : (
+        <EmptyState
+          title="No tags yet"
+          message="Tags will appear here once they are added to posts."
+          icon={<RiHashtag className="w-12 h-12" />}
+        />
+      )}
     </div>
   );
 };

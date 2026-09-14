@@ -58,10 +58,49 @@ export const MoonIcon = () => {
   );
 };
 
-export const BackArrowIcon = () => {
+export const MonitorIcon = () => {
   return (
     <svg
-      fill="#a955f7"
+      width="24px"
+      height="24px"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <g id="SVGRepo_bgCarrier" strokeWidth="0" />
+
+      <g
+        id="SVGRepo_tracerCarrier"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+
+      <g id="SVGRepo_iconCarrier">
+        <rect
+          x="2"
+          y="3"
+          width="20"
+          height="14"
+          rx="2"
+          stroke="#a955f7"
+          strokeWidth="2"
+        />
+        <path
+          d="M8 21H16M12 17V21"
+          stroke="#a955f7"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </g>
+    </svg>
+  );
+};
+
+export const BackArrowIcon = ({ className = "" }: { className?: string }) => {
+  return (
+    <svg
+      className={`fill-purple-500 ${className}`}
       version="1.1"
       id="Capa_1"
       xmlns="http://www.w3.org/2000/svg"

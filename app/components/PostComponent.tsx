@@ -1,47 +1,65 @@
-import Link from 'next/link'
-import React from 'react'
-import { Lilita_One, VT323} from 'next/font/google'
-import { Post } from '../utils/interface'
+import Link from "next/link";
+import React from "react";
+import { Post } from "../utils/interface";
+import { dedupeTags } from "../utils/helpers";
+import { RiCalendarLine, RiFolderLine } from "react-icons/ri";
 
 interface Props {
   post: Post;
 }
 
-const font = Lilita_One({weight: "400", subsets: ["latin"]})
-const dateFont = VT323({weight: "400", subsets: ["latin"]})
-
-const PostComponent = ({post}: Props) => {
+const PostComponent = ({ post }: Props) => {
+  const tags = dedupeTags(post?.tags);
   return (
-    <div className={cardStyle}>
+    <div className={`${cardStyle} group`}>
       <Link href={`/posts/${post?.slug?.current}`}>
-        <h2 className={`${font.className} text-2xl dark:text-slate-300`}>{post?.title}</h2>
-        <p className={`${dateFont.className} my-2 text-purple-800`}>{new Date(post?.publishedAt).toDateString()}</p>
-        <p className='dark:text-gray-400 mb-4 line-clamp-2'>{post?.excerpt}</p>
+        <div className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400 mb-2">
+          {post?.category && (
+            <span key="category" className="flex items-center gap-1">
+              <RiFolderLine key="folder-icon" className="w-4 h-4 text-purple-500" />
+              {post?.category?.name}
+            </span>
+          )}
+          <span key="date" className="flex items-center gap-1">
+            <RiCalendarLine key="calendar-icon" className="w-4 h-4" />
+            <span key="date-text" className="font-pixel">
+              {new Date(post?.publishedAt).toDateString()}
+            </span>
+          </span>
+        </div>
+        <h2 className="font-display text-2xl dark:text-slate-300 group-hover:text-purple-500 transition-colors">
+          {post?.title}
+        </h2>
+        <p className="dark:text-gray-400 mb-4 line-clamp-2 mt-2">{post?.excerpt}</p>
       </Link>
 
       {/* TAGS */}
-
-      <div>
-        {post?.tags?.map((tag) => (
-          <span key={tag?._id} className='mr-2 p-1 rounded-sm text-sm lowercase dark:bg-gray-950 border dark:border-gray-900'>#{tag?.name}</span>
+      <div className="flex flex-wrap gap-2">
+        {tags.map((tag, index) => (
+          <span
+            key={tag?._id ?? `tag-${index}`}
+            className="px-2 py-1 rounded-sm text-xs lowercase bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300"
+          >
+            #{tag?.name}
+          </span>
         ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default PostComponent
+export default PostComponent;
 
 const cardStyle = `
-mb-8
-p-4
+mb-6
+p-5
 border
-border-gray-900
-rounded-md
+border-gray-300
+dark:border-purple-900
+rounded-lg
 shadow-sm
-shadow-purple-950
 hover:shadow-md
-hover:bg-purple-500
-hover:text-white
-hover:dark:bg-gray-950
-`
+hover:shadow-purple-500/10
+hover:border-purple-500
+transition-all
+`;
