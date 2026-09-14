@@ -1,0 +1,46 @@
+/* AUI Blogo Studio overrides — match the public site look */
+
+
+/* Purple accent to mirror the site (purple-500 #a855f7) */
+#sanity [data-selected="true"] {
+  background: rgba(168, 85, 247, 0.14) !important;
+}
+
+#sanity [data-selected="true"] * {
+  color: #a855f7 !important;
+}
+
+#sanity a[data-selected="true"] svg,
+#sanity button[data-selected="true"] svg {
+  color: #a855f7 !important;
+}
+
+#sanity :is(a, button)[data-selected="true"]:hover {
+  background: rgba(168, 85, 247, 0.2) !important;
+}
+
+/* links throughout the studio */
+#sanity a:not([data-ui="Inline"])[data-selected="false"]:hover svg,
+#sanity a:hover svg,
+#sanity a:hover * {
+  color: #a855f7 !important;
+}
+
+/* Navbar — match the public site brand (Lilita One + purple) */
+#sanity [data-ui="Navbar"],
+#sanity [data-testid="studio-navbar"] {
+  font-family: "Fira Code", ui-monospace, monospace;
+}
+
+/* Brand = workspace title button ("AUI Blogo") — site logo style, both schemes */
+#sanity [data-ui="Navbar"] button#workspace-menu,
+#sanity [data-ui="Navbar"] button#workspace-menu span {
+  font-family: "Lilita One", "Fira Code", sans-serif !important;
+  color: #a855f7 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+#sanity [data-ui="Navbar"] button#workspace-menu svg {
+  color: #a855f7 !important;
+}

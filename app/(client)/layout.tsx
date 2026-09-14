@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { Fira_Code } from "next/font/google";
+import "@fontsource/lilita-one/latin-400.css";
+import "@fontsource/vt323/latin-400.css";
+import "@fontsource/fira-code/latin-400.css";
 import "./globals.css";
 import Navbar from "../components/Navbar";
 import { Provider } from "../utils/Provider";
 import Footer from "../components/Footer";
-
-const firaCode = Fira_Code({ subsets: ["latin"] });
+import FloatingButtons from "../components/FloatingButtons";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://aui-blogo.vercel.app/"),
@@ -35,13 +36,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body
-        className={`${firaCode.className} h-full bg-amber-50 text-indigo-950 dark:bg-slate-950 dark:text-amber-50 dark:selection:bg-purple-500`}
-      >
+      <body className="font-code h-full bg-amber-50 text-indigo-950 dark:bg-slate-950 dark:text-amber-50 selection:bg-purple-500 selection:text-amber-50 dark:selection:bg-purple-500 dark:selection:text-amber-50">
         <Provider>
           <Navbar />
           <main className="h-full mx-auto max-w-5xl px-6">{children}</main>
           <Footer />
+          <FloatingButtons />
         </Provider>
       </body>
     </html>

@@ -1,7 +1,29 @@
 {
   "name": "aui-blogo",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "private": true,
+  "description": "A fun-full-stack developer blogging platform with Next.js 14 (ISR), Sanity CMS headless content, embedded Studio, GROQ search, comments, and auto SEO.",
+  "license": "MIT",
+  "author": "Afaq Ul Islam (https://github.com/afaqulislam)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/afaqulislam/aui-blogo.git"
+  },
+  "keywords": [
+    "nextjs",
+    "sanity",
+    "blog",
+    "cms",
+    "typescript",
+    "tailwindcss",
+    "isr",
+    "groq",
+    "studio"
+  ],
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -9,11 +31,15 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@chakra-ui/react": "^3.8.0",
+    "@fontsource/fira-code": "^5.3.0",
+    "@fontsource/lilita-one": "^5.3.0",
+    "@fontsource/vt323": "^5.3.0",
     "@portabletext/react": "^3.0.11",
     "@sanity/image-url": "^1.1.0",
     "@sanity/ui": "^2.13.0",
     "@sanity/vision": "^3.75.0",
+    "baseline-browser-mapping": "^2.11.22",
+    "caniuse-lite": "^1.0.30001810",
     "next": "^14.2.24",
     "next-sanity": "^9.8.56",
     "next-themes": "^0.2.1",
@@ -21,6 +47,7 @@
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.51.3",
     "react-icons": "^5.4.0",
+    "react-is": "^19.3.0",
     "sanity": "^3.75.0",
     "styled-components": "^6.1.15"
   },

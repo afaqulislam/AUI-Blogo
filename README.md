@@ -64,15 +64,21 @@ It provides everything a developer blog needs out of the box: rich-text renderin
 |---|---|
 | 📝 **Rich Content** | Full Portable Text rendering (headings, images, lists, code blocks) via `@portabletext/react` |
 | 🏷️ **Tag Browsing** | Browse and filter all posts by tag at `/tag/[slug]` |
+| 📁 **Categories** | Proper Category content model with listing (`/categories`) and detail (`/category/[slug]`) routes |
+| 🔍 **Search** | Real GROQ-powered search at `/search?q=term` with case-insensitive matching on title/excerpt/tags/category |
 | 💬 **Comment System** | Readers can leave comments (name, email, text) stored in Sanity. Sortable asc/desc |
-| 🌙 **Dark / Light Mode** | System-aware theme toggle powered by `next-themes` |
+| 🌙 **Dark / Light Mode** | 3-state theme switch (light / dark / system) on a single button, powered by `next-themes`; Studio follows the site theme |
 | 📚 **Table of Contents** | Auto-generated per post from heading blocks (h2–h6) with anchor links |
-| 🔎 **SEO** | Dynamic `generateMetadata` per post (title, description, Open Graph) |
+| 🔗 **Share / Copy Link** | Share buttons with clipboard copy per article |
+| ➡️ **Prev / Next Navigation** | Article-to-article navigation on detail pages |
+| 🔀 **Related Articles** | Related posts shown by shared category |
+| 🔎 **SEO + JSON-LD** | Dynamic `generateMetadata` per post plus Article structured data (BlogPosting schema) |
 | 🗺️ **Sitemap & Robots** | Auto-generated `/sitemap.xml` and `/robots.txt` |
 | ⚡ **ISR** | Pages revalidate every 60 seconds for near-real-time content updates without full rebuilds |
-| 🖼️ **Optimized Images** | Next.js `<Image>` with Sanity CDN (`cdn.sanity.io`) remote patterns |
-| 🎨 **Sanity Studio** | Embedded Sanity Studio at `/studio` with Vision (GROQ playground) |
+| 🖼️ **Optimized Images** | Next.js `<Image>` with Sanity CDN (`cdn.sanity.io`) remote patterns + required alt text |
+| 🎨 **Sanity Studio** | Embedded Sanity Studio at `/studio` with Vision (GROQ playground), branded blog logo, custom sidebar structure, and theme that follows the site |
 | 📋 **Form Validation** | Comment form uses `react-hook-form` with email pattern and min-length validation |
+| ⚠️ **Error / Empty States** | Graceful empty, error, and not-found states across all pages (incl. a dedicated homepage empty state when no posts exist) |
 
 ---
 
@@ -102,13 +108,13 @@ It provides everything a developer blog needs out of the box: rich-text renderin
 | Technology | Version | Purpose |
 |---|---|---|
 | [react-hook-form](https://react-hook-form.com/) | `^7.51.3` | Comment form state & validation |
-| [@chakra-ui/react](https://chakra-ui.com/) | `^3.8.0` | UI components |
 | [@sanity/ui](https://www.sanity.io/ui) | `^2.13.0` | Sanity Studio UI primitives |
 | [styled-components](https://styled-components.com/) | `^6.1.15` | CSS-in-JS (Sanity Studio theming) |
 
 ### Typography (Google Fonts)
 - **Fira Code** — monospace font for the entire client interface
 - **VT323** — retro font used for post publication dates
+- **Lilita One** — display font used for the brand/logo and post titles
 
 ---
 
@@ -118,15 +124,30 @@ It provides everything a developer blog needs out of the box: rich-text renderin
 aui-blogo/
 ├── app/
 │   ├── (admin)/                   # Admin route group
+│   │   ├── layout.tsx             # Admin layout: metadata, ThemeProvider, AdminThemeSync
+│   │   ├── globals.css            # Admin / Studio base styles
+│   │   └── studio/
+│   │       └── [[...index]]/      # Embedded Sanity Studio
+│   │           ├── page.tsx                   # Studio route entry
+│   │           ├── StudioClient.tsx           # Client component mounting Sanity Studio
+│   │           ├── StudioErrorBoundary.tsx    # Studio error boundary (auto-reload)
+│   │           └── studio-theme.css           # Studio font / color-scheme overrides
 │   ├── (client)/                  # Public-facing route group
 │   │   ├── layout.tsx             # Root layout: font, metadata, Navbar, Footer, Provider
-│   │   ├── page.tsx               # Home: lists all posts via GROQ
+│   │   ├── page.tsx               # Home: featured + categories + all posts
 │   │   ├── globals.css            # Base CSS resets
 │   │   ├── posts/
 │   │   │   ├── [slug]/
-│   │   │   │   └── page.tsx       # Individual post: rich text, TOC, tags, comments
+│   │   │   │   └── page.tsx       # Post detail: rich text, TOC, tags, comments, related
 │   │   │   └── not-found.tsx      # Custom 404 for posts
+│   │   ├── categories/
+│   │   │   └── page.tsx           # All categories with post counts
+│   │   ├── category/
+│   │   │   └── [slug]/            # Posts filtered by category
+│   │   ├── search/
+│   │   │   └── page.tsx           # GROQ-powered search (/search?q=)
 │   │   └── tag/
+│   │       ├── page.tsx           # All tags
 │   │       └── [slug]/            # Tag-filtered post listing
 │   ├── api/
 │   │   └── comment/
@@ -134,40 +155,49 @@ aui-blogo/
 │   ├── components/
 │   │   ├── AddComment.tsx         # Comment submission form (react-hook-form)
 │   │   ├── AllComments.tsx        # Comment listing with sort order
+│   │   ├── ArticleGrid.tsx        # Reusable grid of article cards
+│   │   ├── CategoryCard.tsx       # Category card with post count
 │   │   ├── CmsNavbar.tsx          # Navigation for the admin/CMS area
+│   │   ├── EmptyState.tsx         # Reusable empty-state component
+│   │   ├── FeaturedPost.tsx       # Featured/latest article hero
+│   │   ├── FloatingButtons.tsx    # Scroll-to-top / theme quick actions
 │   │   ├── Footer.tsx             # Site footer with links & social icons
 │   │   ├── Header.tsx             # Page-level header (title + optional tag list)
 │   │   ├── Icons.tsx              # Centralized SVG/react-icons exports
 │   │   ├── Navbar.tsx             # Site navigation (logo, links, theme toggle)
-│   │   ├── PostComponent.tsx      # Post card (title, date, excerpt, tags)
-│   │   ├── ThemeSwitch.tsx        # Dark/light mode toggle button
+│   │   ├── PostComponent.tsx      # Article card (title, date, excerpt, category, tags)
+│   │   ├── SearchBar.tsx          # Search input (client component)
+│   │   ├── ShareButton.tsx        # Share + copy-link buttons
+│   │   ├── ThemeSwitch.tsx        # 3-state light/dark/system toggle button
 │   │   └── Toc.tsx                # Auto-generated Table of Contents
 │   ├── utils/
+│   │   ├── AdminThemeSync.tsx     # Bidirectional Studio ↔ site theme sync
 │   │   ├── Provider.tsx           # next-themes ThemeProvider wrapper
 │   │   ├── helpers.ts             # Utility: slugify()
-│   │   └── interface.tsx          # TypeScript interfaces: Post, Tag, Comment
+│   │   └── interface.tsx          # TypeScript interfaces: Post, Tag, Comment, Category
+│   ├── global-error.tsx           # Global error boundary
 │   ├── robots.ts                  # Auto-generated robots.txt rules
-│   └── sitemap.ts                 # Auto-generated XML sitemap from Sanity posts
+│   └── sitemap.ts                 # Auto-generated XML sitemap from Sanity
 │
 ├── sanity/
-│   ├── env.ts                     # Env var assertions (projectId, dataset, token)
-│   ├── schema.ts                  # Aggregates all schema types
+│   ├── env.ts                     # Env var assertions (projectId, dataset, server token)
+│   ├── schema.ts                  # Aggregates all schema types (post, tag, comment, category)
 │   ├── structure.ts               # Custom Studio structure/sidebar
 │   ├── lib/
 │   │   ├── client.ts              # Sanity client instance (createClient)
-│   │   ├── image.ts               # Image URL builder helper
-│   │   └── live.ts                # Live content utilities
+│   │   └── image.ts               # Image URL builder helper
 │   ├── schemas/
-│   │   ├── post.ts                # Post schema (title, slug, excerpt, body, tags)
+│   │   ├── post.ts                # Post schema (validated)
 │   │   ├── tag.ts                 # Tag schema (name, slug)
+│   │   ├── category.ts            # Category schema (name, slug, description)
 │   │   └── comment.ts             # Comment schema (name, email, comment, post ref)
-│   └── schemaTypes/               # Additional schema type definitions
 │
 ├── public/                        # Static assets
 │   └── favicon.ico
+├── screenshots/                   # Week 3 evidence screenshots
 ├── .env.example                   # Environment variable template
 ├── .env.local                     # Local environment variables (git-ignored)
-├── next.config.js                 # Next.js config: Sanity CDN image remote patterns
+├── next.config.js                 # Next.js config: Sanity CDN image patterns + security headers
 ├── sanity.config.ts               # Sanity Studio configuration (plugins, schema)
 ├── sanity.cli.ts                  # Sanity CLI configuration
 ├── tailwind.config.ts             # Tailwind CSS configuration
@@ -230,12 +260,20 @@ aui-blogo/
 ### `post`
 | Field | Type | Description |
 |---|---|---|
-| `title` | `string` | Post title |
-| `slug` | `slug` | URL-safe identifier (auto-generated) |
-| `excerpt` | `string` | Short post summary for listings & SEO |
-| `publishedAt` | `datetime` | Publication date |
-| `body` | `array` (Portable Text) | Rich content blocks (text, headings, images) |
+| `title` | `string` | Post title (10–120 chars, required) |
+| `slug` | `slug` | URL-safe identifier (auto-generated, required) |
+| `excerpt` | `string` | Short post summary for listings & SEO (max 200, required) |
+| `publishedAt` | `datetime` | Publication date (required) |
+| `category` | `reference` | Primary Category reference (required) |
+| `body` | `array` (Portable Text) | Rich content blocks (text, headings, images with alt) |
 | `tags` | `array<reference>` | References to Tag documents |
+
+### `category`
+| Field | Type | Description |
+|---|---|---|
+| `name` | `string` | Display name of the category (required) |
+| `slug` | `slug` | URL-safe identifier (required) |
+| `description` | `text` | Optional category description (max 300) |
 
 ### `tag`
 | Field | Type | Description |
@@ -328,14 +366,14 @@ NEXT_PUBLIC_SANITY_DATASET=production
 
 # Sanity API Write Token — create one at https://sanity.io/manage → API → Tokens
 # Required for the comment submission API route to write data to Sanity
-NEXT_PUBLIC_SANITY_TOKEN=your_api_token
+SANITY_TOKEN=your_api_token
 
 # ── Optional ───────────────────────────────────────────────────────────────────
 # Sanity API version (defaults to 2023-12-03 if not set)
 # NEXT_PUBLIC_SANITY_API_VERSION=2023-12-03
 ```
 
-> **⚠️ Important:** The `NEXT_PUBLIC_SANITY_TOKEN` variable is required for the comment submission feature. Without it, readers will not be able to post comments. Create a token with **Editor** permissions in your Sanity dashboard under **Settings → API → Tokens**.
+> **⚠️ Important:** The `SANITY_TOKEN` variable is required for the comment submission feature. Without it, readers will not be able to post comments. Create a token with **Editor** permissions in your Sanity dashboard under **Settings → API → Tokens**. Unlike the previous `NEXT_PUBLIC_`-prefixed version, this token is **server-side only** and is never exposed to the browser, keeping your write credentials secure.
 
 ### Running Locally
 
@@ -347,8 +385,11 @@ Open the following URLs in your browser:
 
 | URL | Description |
 |---|---|
-| [http://localhost:3000](http://localhost:3000) | Blog homepage (all posts) |
+| [http://localhost:3000](http://localhost:3000) | Blog homepage |
 | [http://localhost:3000/posts/[slug]](http://localhost:3000) | Individual post page |
+| [http://localhost:3000/categories](http://localhost:3000) | All categories |
+| [http://localhost:3000/category/[slug]](http://localhost:3000) | Posts filtered by category |
+| [http://localhost:3000/search?q=term](http://localhost:3000) | Search results |
 | [http://localhost:3000/tag/[slug]](http://localhost:3000) | Posts filtered by tag |
 | [http://localhost:3000/studio](http://localhost:3000/studio) | Embedded Sanity Studio |
 
@@ -383,7 +424,7 @@ This project is optimized for deployment on [Vercel](https://vercel.com/), the p
 
 1. Push your code to a GitHub repository.
 2. Import the repository on [vercel.com/new](https://vercel.com/new).
-3. Add all three environment variables (`NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET`, `NEXT_PUBLIC_SANITY_TOKEN`) in the **Environment Variables** section of your Vercel project settings.
+3. Add all three environment variables (`NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET`, `SANITY_TOKEN`) in the **Environment Variables** section of your Vercel project settings.
 4. Click **Deploy**.
 
 ### Other Platforms
@@ -443,6 +484,32 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ## 🏆 Changelog
 
+### v0.3.1 — Task 1 Submission Polish
+- Homepage now shows a friendly empty state when there are zero published posts
+- Tag schema validation: `name` (required, 1–40 chars) and `slug` (required) — no more empty Tags in Studio
+- Comment form: visible success/error feedback (server messages shown safely with a fallback) and a loading state on the submit button
+- Evidence: technical check outputs (lint / tsc / build) saved under `screenshots/week3/task1/technical-evidence/`
+- Audit fixes only — no features rebuilt, no new dependencies added
+
+### v0.3.0 — Maintenance & Polish
+- **Codebase cleanup:** removed the unused `sanity/schemaTypes/` folder, `sanity/lib/live.ts`, the unused `dedupeById` helper, and the unused `@chakra-ui/react` dependency
+- **Studio alignment:** wired the custom Sanity Studio sidebar (`sanity/structure.ts`) into `deskTool`, added a branded BlogoStudio logo, and made the Studio follow the site theme (light / dark / system) with full bidirectional sync
+- **Theme switch rework:** single-button cycle (light → dark → system) with `enableSystem` in `next-themes`
+- **Security hardening:** converted slug-based GROQ queries to parameterized `$slug`/`$tag` params (prevents query injection), whitelisted the `commentsOrder` search param, hardened `POST /api/comment` validation, and added security response headers (`X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`)
+- **Docs & metadata:** accurate README tree, admin metadata now reads "AUI Blogo Studio", `Toc.tsx` styling typo fixed
+
+### v0.2.0 — Week 3 Task 1: Full-Stack Blog Platform Upgrade
+- Added `category` content model with `/categories` and `/category/[slug]` routes
+- Added `/search?q=` GROQ-powered search with no-results state
+- Strengthened post validation (title min/max, excerpt, body, category, image alt required)
+- Added reusable components: ArticleGrid, SearchBar, CategoryCard, FeaturedPost, ShareButton, EmptyState
+- Added share/copy-link, prev/next navigation, and related articles on post detail
+- Added JSON-LD `BlogPosting` structured data
+- Homepage now shows featured/latest + categories + all articles
+- Moved Sanity write token to server-side `SANITY_TOKEN` for security
+- Added global error boundary and empty/not-found states
+- Updated sitemap/robots for new category and search routes
+
 ### v0.1.0 — Initial Release
 - Next.js 14 App Router setup with TypeScript
 - Sanity v3 CMS integration with embedded Studio at `/studio`
@@ -469,3 +536,108 @@ This project is open source and available under the [MIT License](LICENSE).
 > Built with ❤️ by [Afaq Ul Islam](https://github.com/afaqulislam)
 
 </div>
+
+---
+
+# 📘 Week 3 — Full-Stack Blog Platform
+
+This section documents the Week 3 Task 1 upgrade that evolved the original AUI-Blogo into a production-oriented full-stack blogging platform.
+
+## 🎯 Project Overview
+
+A modern, full-stack developer publication platform for practical articles about software development, AI, web technologies, tools, and engineering. Content is managed headlessly through Sanity CMS, served via Next.js 14 with ISR, and includes categories, search, full admin content management, validation, persistence, and responsive design.
+
+## ✨ Week 3 Features
+
+| Feature | Description |
+|---|---|
+| 📁 **Categories** | Real `category` content model (name, slug, description) with primary category reference per post |
+| 🔍 **Search** | Server-side GROQ search at `/search?q=term` with case-insensitive title/excerpt/tag/category matching |
+| 🧭 **Category Routes** | `/categories` listing + `/category/[slug]` detail with post counts |
+| 🖥️ **Admin Workflow** | Create, edit, publish, and delete posts/categories/tags via embedded Sanity Studio |
+| ✅ **Validation** | Title (10–120 chars), slug (required/unique), excerpt (required, ≤200), body (required), category (required), image alt text (required) |
+| 🔗 **Sharing** | Share + copy-link buttons on every article |
+| ➡️ **Prev/Next & Related** | Article navigation and related-posts section |
+| 📄 **Structured Data** | JSON-LD `BlogPosting` schema for SEO |
+| 🛡️ **Security** | Write token moved to server-side `SANITY_TOKEN` (never exposed to browser) |
+| 🧰 **Reusable Components** | ArticleGrid, SearchBar, CategoryCard, FeaturedPost, ShareButton, EmptyState |
+| 📱 **Responsive** | Fully responsive at 320px → 1440px+ |
+| ⚠️ **States** | Graceful empty, error, loading, and 404 states |
+
+## 🗺️ Route Map
+
+| Route | Type | Description |
+|---|---|---|
+| `/` | Page | Home: featured/latest + category + all articles |
+| `/posts/[slug]` | Dynamic | Article detail with TOC, tags, comments, related, share |
+| `/categories` | Page | All categories with post counts |
+| `/category/[slug]` | Dynamic | Posts filtered by category |
+| `/search?q=` | Dynamic | GROQ search results + no-results state |
+| `/tag` | Page | All tags |
+| `/tag/[slug]` | Dynamic | Posts filtered by tag |
+| `/studio` | Page | Embedded Sanity Studio |
+| `POST /api/comment` | API | Create a comment |
+| `/sitemap.xml` | SEO | Auto-generated sitemap |
+| `/robots.txt` | SEO | Crawler rules |
+
+## 🗄️ Data Models
+
+### `category` (new)
+| Field | Type | Validation |
+|---|---|---|
+| `name` | `string` | Required, 2–60 chars |
+| `slug` | `slug` | Required |
+| `description` | `text` | Max 300 chars |
+
+### `post` (updated)
+| Field | Type | Validation |
+|---|---|---|
+| `title` | `string` | Required, 10–120 chars |
+| `slug` | `slug` | Required |
+| `excerpt` | `text` | Required, max 200 |
+| `category` | `reference` | Required |
+| `body` | `array` (Portable Text) | Required, images need alt text |
+| `tags` | `array<reference>` | Optional |
+
+## 🔒 Admin Workflow
+
+1. Open `/studio` (Sanity Studio).
+2. **Create:** Posts → Create new → fill validated fields → Publish.
+3. **Edit:** Open any post → modify → Publish updated version.
+4. **Delete:** Remove documents directly in Studio.
+5. **Verify:** Homepage reflects new/edited content after the 60s ISR window (or live preview).
+
+## 📱 Responsive Design
+
+Tested at 320px, 375px, 425px, 768px, 1024px, 1280px, and 1440px+ — navbar, cards, detail pages, TOC, category pages, search, forms, comments, and footer all render without horizontal overflow.
+
+## 🧪 Testing
+
+Run the following:
+
+```bash
+npm run lint      # ESLint — passes with no warnings/errors
+npm run build     # Production build — compiles successfully
+npx tsc --noEmit  # TypeScript — passes with no errors
+```
+
+Manual test checklist covers public pages, admin workflow, persistence, and responsive breakpoints (see `REPORT.md`).
+
+## ☁️ Deployment
+
+Deployed on Vercel. Environment variables (in Vercel project settings):
+
+```
+NEXT_PUBLIC_SANITY_PROJECT_ID
+NEXT_PUBLIC_SANITY_DATASET
+SANITY_TOKEN        # server-side only
+```
+
+## 📸 Screenshots
+
+Stored under `/screenshots/week3/task1/`.
+
+## 🌐 Live Demo & Repository
+
+- **Live Demo:** https://aui-blogo.vercel.app/
+- **Repository:** https://github.com/afaqulislam/AUI-Blogo

@@ -1,16 +1,26 @@
 import Header from "@/app/components/Header";
-import PostComponent from "@/app/components/PostComponent";
+import ArticleGrid from "@/app/components/ArticleGrid";
 import { Post } from "@/app/utils/interface";
 import { client } from "@/sanity/lib/client";
 import React from "react";
+import { Metadata } from "next";
+import Link from "next/link";
+import { RiArrowLeftLine } from "react-icons/ri";
+import { cache } from "react";
 
-async function getPostsByTag(tag: string) {
+const getPostsByTag = cache(async (slug: string) => {
   const query = `
-  *[_type == "post" && references(*[_type == "tag" && slug.current == "${tag}"]._id)]{
+  *[_type == "post" && references(*[_type == "tag" && slug.current == $slug]._id)] | order(publishedAt desc) {
+    _id,
     title,
     slug,
     publishedAt,
     excerpt,
+    category-> {
+      _id,
+      name,
+      slug
+    },
     tags[]-> {
       _id,
       slug,
@@ -18,27 +28,11 @@ async function getPostsByTag(tag: string) {
     }
   }
   `;
-
-  const posts = await client.fetch(query);
+  const posts = await client.fetch(query, { slug });
   return posts;
-}
+});
 
 export const revalidate = 60;
-
-export async function generateMetadata({ params }: Params) {
-  return {
-    title: `#${params.slug}`,
-    description: `Posts with the tag ${params.slug}`,
-    openGraph: {
-      title: `#${params.slug}`,
-      description: `Posts with the tag ${params.slug}`,
-      type: "website",
-      locale: "en_US",
-      url: `https://aui-blogo.vercel.app/${params.slug}`,
-      siteName: "AUIBlogo",
-    },
-  };
-}
 
 interface Params {
   params: {
@@ -46,16 +40,32 @@ interface Params {
   };
 }
 
+export async function generateMetadata({ params }: Params) {
+  return {
+    title: `#${params.slug}`,
+    description: `Posts tagged with #${params.slug} on AUI Blogo`,
+  };
+}
+
 const page = async ({ params }: Params) => {
   const posts: Array<Post> = await getPostsByTag(params.slug);
-  console.log(posts, "posts by tag");
   return (
     <div>
-      <Header title={`#${params?.slug}`} tags />
-      <div>
-        {posts?.length > 0 &&
-          posts?.map((post) => <PostComponent key={post?._id} post={post} />)}
+      <div className="mb-4">
+        <Link
+          href="/tag"
+          className="inline-flex items-center gap-1 text-sm text-purple-500 hover:text-purple-600 transition-colors"
+        >
+          <RiArrowLeftLine className="w-4 h-4" />
+          All Tags
+        </Link>
       </div>
+      <Header title={`#${params?.slug}`} />
+      <ArticleGrid
+        posts={posts}
+        emptyTitle="No articles with this tag"
+        emptyMessage="No articles have been tagged with this tag yet."
+      />
     </div>
   );
 };

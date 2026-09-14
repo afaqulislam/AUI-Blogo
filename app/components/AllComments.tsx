@@ -11,7 +11,6 @@ interface Props {
 const AllComments = ({ comments, slug, commentsOrder }: Props) => {
   return (
     <div>
-      <h3>All Comments</h3>
       {comments?.length === 0 && <p>No comments yet.</p>}
       {comments?.length > 0 && (
         <div className="mb-2">

@@ -3,7 +3,7 @@ import { slugify } from "../utils/helpers";
 
 const Toc = ({ headings }: any) => (
   <div className="max-w-2xl mx-auto mt-8 text-center border rounded-sm dark:border-purple-950 ">
-    <h2 className="text-xl font-bold p-2 mb-5 border-b dark:border-purple-950 bg:amber-50 dark:bg-slate-900/20">
+    <h2 className="text-xl font-bold p-2 mb-5 border-b dark:border-purple-950 bg-amber-50 dark:bg-slate-900/20">
       Table of Contents
     </h2>
     <nav>

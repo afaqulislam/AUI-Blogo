@@ -1,11 +1,15 @@
 "use client";
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 
 interface Props {
   postId: string;
 }
 
 const AddComment = ({ postId }: Props) => {
+  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  const [feedback, setFeedback] = useState("");
+
   const {
     register,
     handleSubmit,
@@ -16,25 +20,63 @@ const AddComment = ({ postId }: Props) => {
   const onSubmit = async (data: any) => {
     const { name, email, comment } = data;
 
-    const res = await fetch("/api/comment", {
-      method: "POST",
-      body: JSON.stringify({ name, email, comment, postId }),
-    });
-    if (!res.ok) {
-      console.log("Failed to add comment");
-      return;
-    }
+    setStatus("idle");
+    setFeedback("");
 
-    reset();
+    try {
+      const res = await fetch("/api/comment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, comment, postId }),
+      });
+
+      if (!res.ok) {
+        let message = "Unable to submit your comment. Please try again.";
+        try {
+          const body = await res.json();
+          if (typeof body?.message === "string" && body.message) {
+            message = body.message;
+          }
+        } catch {
+          // response not parseable — fall back to the default message
+        }
+        setFeedback(message);
+        setStatus("error");
+        return;
+      }
+
+      reset();
+      setFeedback("Comment submitted successfully!");
+      setStatus("success");
+    } catch {
+      setFeedback("Unable to submit your comment. Please try again.");
+      setStatus("error");
+    }
   };
 
   return (
-    <div className="mt-14">
+    <div className="mt-1">
       <p>
         Leave a comment <span role="img">💬</span>
       </p>
+      {status === "success" && (
+        <p
+          aria-live="polite"
+          className="text-green-600 dark:text-green-400 text-sm mt-3 mb-2 font-medium"
+        >
+          {feedback}
+        </p>
+      )}
+      {status === "error" && (
+        <p
+          aria-live="assertive"
+          className="text-red-600 dark:text-red-400 text-sm mt-3 mb-2 font-medium"
+        >
+          {feedback}
+        </p>
+      )}
       <form
-        className="flex flex-col border dark:border-purple-950 shadow-sm rounded px-8 pt-6 pb-6 mb-10"
+        className="flex flex-col mt-4 border dark:border-purple-950 shadow-sm rounded px-8 pt-6 pb-6 mb-10"
         onSubmit={handleSubmit((data) => onSubmit(data))}
       >
         <label>Name</label>
