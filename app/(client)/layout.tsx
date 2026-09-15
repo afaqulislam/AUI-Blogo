@@ -27,6 +27,11 @@ export const metadata: Metadata = {
     url: "https://aui-blogo.vercel.app/",
     siteName: "AUIBlogo",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "AUI | Blogo - A blog for developers",
+    description: "A blog for developers by developers!",
+  },
 };
 
 export default function RootLayout({

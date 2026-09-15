@@ -1,6 +1,6 @@
 {
   "name": "aui-blogo",
-  "version": "0.3.0",
+  "version": "0.3.3",
   "private": true,
   "description": "A fun-full-stack developer blogging platform with Next.js 14 (ISR), Sanity CMS headless content, embedded Studio, GROQ search, comments, and auto SEO.",
   "license": "MIT",
@@ -38,8 +38,6 @@
     "@sanity/image-url": "^1.1.0",
     "@sanity/ui": "^2.13.0",
     "@sanity/vision": "^3.75.0",
-    "baseline-browser-mapping": "^2.11.22",
-    "caniuse-lite": "^1.0.30001810",
     "next": "^14.2.24",
     "next-sanity": "^9.8.56",
     "next-themes": "^0.2.1",

@@ -3,6 +3,7 @@ import AllComments from "@/app/components/AllComments";
 import Toc from "@/app/components/Toc";
 import ShareButton from "@/app/components/ShareButton";
 import { slugify, dedupeTags } from "@/app/utils/helpers";
+import { isSvgUrl } from "@/app/utils/image";
 import { Post } from "@/app/utils/interface";
 import { client } from "@/sanity/lib/client";
 import { urlForImage } from "@/sanity/lib/image";
@@ -48,6 +49,13 @@ const getPost = cache(async (slug: string, commentsOrder: "asc" | "desc" = "desc
       name,
       comment,
       _createdAt,
+    },
+    "bodyImages": body[_type == "image"] {
+      _key,
+      "asset": asset-> {
+        _id,
+        metadata { dimensions { width, height } }
+      }
     }
   }
   `;
@@ -115,6 +123,9 @@ export async function generateMetadata({
   return {
     title: post.title,
     description: post.excerpt,
+    alternates: {
+      canonical: `/posts/${params.slug}`,
+    },
     openGraph: {
       title: post.title,
       description: post.excerpt,
@@ -133,6 +144,12 @@ export async function generateMetadata({
         ],
       }),
     },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.excerpt,
+      ...(imageUrl && { images: [imageUrl] }),
+    },
   };
 }
 
@@ -147,6 +164,11 @@ const page = async ({ params, searchParams }: Params) => {
   if (!post) {
     notFound();
   }
+
+  const imageDimMap = new Map<string, { width?: number; height?: number } | undefined>();
+  post?.bodyImages?.forEach((img) => {
+    imageDimMap.set(img?._key || "", img?.asset?.metadata?.dimensions);
+  });
 
   const relatedPosts = post?.category
     ? await getRelatedPosts(post.category.slug.current, params.slug)
@@ -243,7 +265,7 @@ const page = async ({ params, searchParams }: Params) => {
       <article className={richTextStyles}>
         <PortableText
           value={post?.body}
-          components={myPortableTextComponents}
+          components={getPortableTextComponents(imageDimMap)}
         />
       </article>
 
@@ -321,24 +343,37 @@ const page = async ({ params, searchParams }: Params) => {
 
 export default page;
 
-const myPortableTextComponents = {
+const getPortableTextComponents = (
+  imageDimMap: Map<string, { width?: number; height?: number } | undefined>
+) => ({
   types: {
-    image: ({ value }: any) => (
-      <figure className="my-6">
-        <Image
-          src={urlForImage(value).url()}
-          alt={value.alt || "Article image"}
-          width={700}
-          height={700}
-          className="rounded-lg mx-auto"
-        />
-        {value.alt && (
-          <figcaption className="text-center text-sm text-gray-500 dark:text-gray-400 mt-2">
-            {value.alt}
-          </figcaption>
-        )}
-      </figure>
-    ),
+    image: ({ value }: any) => {
+      const dims = imageDimMap.get(value?._key);
+      const aspectRatio =
+        dims?.width && dims?.height ? `${dims.width} / ${dims.height}` : "3 / 2";
+      return (
+        <figure className="my-6">
+          <div
+            className="relative w-full overflow-hidden rounded-lg"
+            style={{ aspectRatio }}
+          >
+            <Image
+              src={urlForImage(value).url()}
+              alt={value.alt || "Article image"}
+              fill
+              unoptimized={isSvgUrl(urlForImage(value).url())}
+              sizes="(max-width: 768px) 100vw, 672px"
+              className="object-cover"
+            />
+          </div>
+          {value.alt && (
+            <figcaption className="text-center text-sm text-gray-500 dark:text-gray-400 mt-2">
+              {value.alt}
+            </figcaption>
+          )}
+        </figure>
+      );
+    },
   },
   block: {
     h2: ({ value }: any) => (
@@ -382,7 +417,7 @@ const myPortableTextComponents = {
       </h6>
     ),
   },
-};
+});
 
 const richTextStyles = `
 mt-14

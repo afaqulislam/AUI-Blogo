@@ -9,6 +9,7 @@ import { Category } from "../utils/interface";
 import { RiFolderLine, RiArticleLine } from "react-icons/ri";
 import EmptyState from "../components/EmptyState";
 import { cache } from "react";
+import type { Metadata } from "next";
 
 const getPosts = cache(async () => {
   const query = `
@@ -50,6 +51,12 @@ const getCategories = cache(async () => {
 
 export const revalidate = 60;
 
+export const metadata: Metadata = {
+  alternates: {
+    canonical: "/",
+  },
+};
+
 export default async function Home() {
   const [posts, categories]: [Post[], Category[]] = await Promise.all([getPosts(), getCategories()]);
   const featuredPost = posts?.[0];
@@ -62,9 +69,9 @@ export default async function Home() {
       {/* Featured Post */}
       {featuredPost && (
         <section className="mb-10" aria-label="Featured article">
-          <h3 className="text-sm font-semibold text-purple-500 uppercase tracking-wider mb-4">
+          <h2 className="text-sm font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wider mb-4">
             Latest Article
-          </h3>
+          </h2>
           <FeaturedPost post={featuredPost} />
         </section>
       )}
@@ -73,12 +80,12 @@ export default async function Home() {
       {categories?.length > 0 && (
         <section className="mb-10" aria-label="Categories">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-purple-500 uppercase tracking-wider">
+            <h2 className="text-sm font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wider">
               Categories
-            </h3>
+            </h2>
             <Link
               href="/categories"
-              className="text-xs text-purple-500 hover:text-purple-600 flex items-center gap-1"
+              className="text-xs text-purple-600 dark:text-purple-400 hover:text-purple-500 flex items-center gap-1"
             >
               <RiFolderLine className="w-3 h-3" />
               View all
@@ -95,9 +102,9 @@ export default async function Home() {
       {/* All Articles */}
       {remainingPosts?.length > 0 && (
         <section aria-label="All articles">
-          <h3 className="text-sm font-semibold text-purple-500 uppercase tracking-wider mb-4">
+          <h2 className="text-sm font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wider mb-4">
             All Articles
-          </h3>
+          </h2>
           <div>
             {remainingPosts.map((post) => (
               <PostComponent key={post?._id} post={post} />

@@ -54,6 +54,9 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   return {
     title: category.name,
     description: category.description || `Articles in the ${category.name} category`,
+    alternates: {
+      canonical: `/category/${params.slug}`,
+    },
   };
 }
 

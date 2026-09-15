@@ -44,6 +44,9 @@ export async function generateMetadata({ params }: Params) {
   return {
     title: `#${params.slug}`,
     description: `Posts tagged with #${params.slug} on AUI Blogo`,
+    alternates: {
+      canonical: `/tag/${params.slug}`,
+    },
   };
 }
 
