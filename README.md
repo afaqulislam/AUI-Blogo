@@ -194,6 +194,7 @@ aui-blogo/
 │
 ├── public/                        # Static assets
 │   └── favicon.ico
+├── screenshots/                   # Week 3 manual evidence pack (PDFs: screenshots, Lighthouse, responsive)
 ├── .env.example                   # Environment variable template
 ├── .env.local                     # Local environment variables (git-ignored)
 ├── next.config.js                 # Next.js config: Sanity CDN image patterns + security headers
@@ -661,6 +662,14 @@ NEXT_PUBLIC_SANITY_PROJECT_ID
 NEXT_PUBLIC_SANITY_DATASET
 SANITY_TOKEN        # server-side only
 ```
+
+## 📸 Screenshots & Evidence
+
+The manual evidence pack lives in `/screenshots/` (Week 3 — captured by the user on the deployed site):
+
+- `screenshots/aui-blogo.pdf` — full-site screenshots (home, article, categories, search, tags)
+- `screenshots/aui-blogo-lighthouse.pdf` — Lighthouse audit results (performance / SEO / accessibility)
+- `screenshots/aui-blogo-responsive.pdf` — responsive layout check across breakpoints
 
 ## 🌐 Live Demo & Repository
 
