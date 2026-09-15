@@ -119,7 +119,7 @@ Manually verified layout at 320px, 375px, 425px, 768px, 1024px, 1280px, and 1440
 | TypeScript | `npx tsc --noEmit` | ✅ No errors |
 | Production start | `npm run start` | ✅ Server starts |
 
-These terminal outputs all pass with exit code 0. Browser screenshots for the manual evidence pack are to be captured by the user (logged-in Studio views cannot be automated).
+These terminal outputs all pass with exit code 0. The manual evidence pack (full-site screenshots, Lighthouse, responsive layouts) is provided as PDFs under `screenshots/`.
 
 ## 15. Results
 
@@ -265,7 +265,7 @@ Harden the blog for production SEO, accessibility, and performance with 5 target
 | Build | `npm run build` | ✅ All 10 routes compiled & generated |
 | Rendered metadata | Production server HTML | ✅ canonical + twitter card on Home and Article |
 
-*Note: browser-based manual checks (keyboard tap-through, Lighthouse, axe) could not be automated in the sandbox — these are listed as manual verification steps on the deployed site.*
+*Note: browser-based manual checks (keyboard tap-through, Lighthouse, axe) could not be automated in the sandbox — these are listed as manual verification steps on the deployed site. The Lighthouse run is captured in `screenshots/aui-blogo-lighthouse.pdf`.*
 
 ## 6. Manual Verification Checklist (on Vercel)
 
