@@ -17,7 +17,7 @@ const Header = ({ title = "", tags = false }: Props) => {
         <p className="text-xs mt-2">
           <Link
             href="/tag"
-            className="text-purple-500 hover:text-purple-600 transition-colors"
+            className="text-purple-600 dark:text-purple-400 hover:text-purple-500 transition-colors"
           >
             #tags
           </Link>

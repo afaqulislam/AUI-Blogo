@@ -119,7 +119,7 @@ Manually verified layout at 320px, 375px, 425px, 768px, 1024px, 1280px, and 1440
 | TypeScript | `npx tsc --noEmit` | ✅ No errors |
 | Production start | `npm run start` | ✅ Server starts |
 
-These terminal outputs are recorded in `screenshots/week3/task1/technical-evidence/` (`lint-output.txt`, `tsc-output.txt`, `build-output.txt`). Browser screenshots for the manual evidence pack are to be captured by the user (logged-in Studio views cannot be automated).
+These terminal outputs all pass with exit code 0. Browser screenshots for the manual evidence pack are to be captured by the user (logged-in Studio views cannot be automated).
 
 ## 15. Results
 
@@ -162,7 +162,6 @@ All Week 3 core requirements are satisfied. The acceptance checklist items for c
 - `app/components/EmptyState.tsx`
 - `app/global-error.tsx`
 - `sanity/schemas/category.ts`
-- `screenshots/week3/task1/technical-evidence/` (lint/tsc/build terminal outputs)
 
 **Files changed (modified):**
 - `app/(client)/page.tsx` (featured + categories + all articles)
@@ -202,3 +201,93 @@ npx tsc --noEmit
 - `/studio` — admin CMS
 - `POST /api/comment` — comments
 - `/sitemap.xml` and `/robots.txt` — SEO
+
+---
+
+# REPORT — Week 3 Task 2: SEO, Accessibility & Performance Hardening
+
+**Submitted by:** Afaq Ul Islam
+**Batch:** Aptura Tech Solutions — Web Development Full Stack Internship — Batch 03 — Week 3 — Task 2
+**Project:** AUI-Blogo (Next.js 14 + Sanity)
+
+## 1. Objective
+
+Harden the blog for production SEO, accessibility, and performance with 5 targeted improvements and small correctness fixes — without rebuilding features or adding dependencies.
+
+## 2. Required Improvements (Before → After)
+
+### 1) Canonical URLs
+- **Before:** No `<link rel="canonical">` anywhere.
+- **After:** Canonical on every route — `/`, `/posts/[slug]`, `/categories`, `/category/[slug]`, `/tag`, `/tag/[slug]`, `/search` (via `alternates.canonical` resolving against `metadataBase`).
+- **Verified:** `curl`/rendered HTML of Home and `/posts/gpt-6-astra-...` shows `https://aui-blogo.vercel.app/` and the exact post canonical.
+
+### 2) Twitter / Social Metadata
+- **Before:** Facebook/Open Graph only; no Twitter card tags.
+- **After:** Default `twitter:card = summary_large_image` at the layout level plus per-article `twitter:title`, `twitter:description`, and `twitter:image` (image only when the post has one).
+- **Verified:** Rendered HTML contains `twitter:card`, `twitter:title`, `twitter:description` on both home and article.
+
+### 3) Comment Form Accessibility
+- **Before:** Unlabeled inputs (implicit wrapping labels), `aria-live` only feedback, decorative emoji exposed to assistive tech.
+- **After:** Explicit `id`+`htmlFor` label associations (`comment-name|email|text`), inline error messages with `aria-invalid` + `aria-describedby`, `noValidate` (React Hook Form owns validation), `role="status"` (success) / `role="alert"` (error) feedback, and emoji wrapped in `aria-hidden="true"`.
+
+### 4) Keyboard Focus Visibility
+- **Before:** Focus was visible only where Tailwind happened to style it; `focus:outline-none` overrides left no replacement.
+- **After:** A global `:focus-visible` purple (`#a855f7`) 2px outline for `a, button, input, textarea, select, summary, [role="button"]` in **both** the public and admin/Studio global stylesheets. Applies to keyboard only (`:focus-visible`), so mouse behavior is unchanged. The search input keeps its Tailwind ring (class specificity wins over the `:where()` rule).
+
+### 5) Image Optimization
+- **Before:** Body images rendered at a fixed `width={700} height={700}` (squashing/cropping + no responsive source selection); featured hero not marked as LCP/Eager.
+- **After:** Featured hero image gets `priority` (Next.js auto-preload + `fetchpriority="high"`). Portable Text images now use a keyed `bodyImages` GROQ projection; the image renderer receives the asset's intrinsic dimensions and renders into an `aspect-ratio` container with `fill` + `sizes="(max-width: 768px) 100vw, 672px"` — responsive sizing and zero layout shift. (Fallback ratio `3 / 2` if dimensions are missing.)
+
+## 3. Additional Fixes
+
+- **Homepage heading order:** section labels are now `h2` (previously `h3` beneath an `h1`, some with no preceding `h2`) — legit heading hierarchy.
+- **Color contrast:** small purple text in light mode bumped `purple-500` → `purple-600` (Home labels, "View all", Header `#tags` link) with `dark:text-purple-400` retained — WCAG AA on light background.
+
+## 4. Files Changed
+
+- `app/(client)/layout.tsx` — default Twitter card metadata.
+- `app/(client)/page.tsx` — canonical, h2 labels, purple-600 contrast.
+- `app/(client)/posts/[slug]/page.tsx` — canonical + per-article Twitter metadata, `bodyImages` GROQ projection, aspect-ratio-responsive Portable Text image renderer.
+- `app/(client)/categories/page.tsx`, `app/(client)/category/[slug]/page.tsx`, `app/(client)/tag/page.tsx`, `app/(client)/tag/[slug]/page.tsx`, `app/(client)/search/page.tsx` — canonical URLs.
+- `app/components/AddComment.tsx` — accessibility audit fixes.
+- `app/components/FeaturedPost.tsx` — `priority` on hero image.
+- `app/components/Header.tsx` — `#tags` link contrast.
+- `app/utils/interface.tsx` — `bodyImages` type.
+- `app/(client)/globals.css`, `app/(admin)/globals.css` — global `:focus-visible` outline.
+- `README.md` — changelog `v0.3.2` + Task 2 section.
+
+## 5. Validation
+
+| Check | Command | Result |
+|---|---|---|
+| Types | `npx tsc --noEmit` | ✅ Passes |
+| Lint | `npm run lint` | ✅ No warnings or errors |
+| Build | `npm run build` | ✅ All 10 routes compiled & generated |
+| Rendered metadata | Production server HTML | ✅ canonical + twitter card on Home and Article |
+
+*Note: browser-based manual checks (keyboard tap-through, Lighthouse, axe) could not be automated in the sandbox — these are listed as manual verification steps on the deployed site.*
+
+## 6. Manual Verification Checklist (on Vercel)
+
+1. Tab through the homepage — every link/button shows the purple focus ring; none lost focus indicators.
+2. Open an article, tab to the comment form — labels announce with the field; submit empty → inline errors with `aria-invalid`.
+3. Run Lighthouse (SEO/Accessibility/Performance) in DevTools on `/` and an article.
+4. Run axe DevTools on `/` and an article — expect 0 violations.
+5. Share an article on X — card preview renders (title/description/image).
+6. Verify `view-source` shows the correct canonical on `/search?q=next`, `/categories`, `/tag`, `/tag/[slug]`, `/category/[slug]`.
+
+## 7. Challenges
+
+- **Twitter meta rendering:** verified as `<meta name="twitter:card">`, not `property=` — audit regex initially reported "missing"; confirmed present with a `name=`-based check.
+- **Machine resource starvation:** `next build` needed a clean process table (dev server killed) to complete in the sandbox.
+- **Fixed-dimension images:** replacing the `width/height` body-image renderer required fetching intrinsic dimensions via a keyed GROQ projection rather than assuming a constant ratio.
+
+## 8. Lessons Learned
+
+- `:focus-visible` + `:where()` gives global accessible focus styling with near-zero specificity collisions and no mouse behavior change.
+- Canonical/social metadata belongs per-route (`alternates.canonical`) rather than only at layout level.
+- `priority` (not `fetchPriority`) is the correct LCP signal on Next.js 14 `next/image`.
+
+## 9. Next Steps
+
+- Pagination for large category/tag listings; reading-time on cards; author model; automated E2E/a11y test suite (Playwright + axe) with CI; Sanity Live Preview.

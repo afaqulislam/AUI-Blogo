@@ -194,7 +194,6 @@ aui-blogo/
 │
 ├── public/                        # Static assets
 │   └── favicon.ico
-├── screenshots/                   # Week 3 evidence screenshots
 ├── .env.example                   # Environment variable template
 ├── .env.local                     # Local environment variables (git-ignored)
 ├── next.config.js                 # Next.js config: Sanity CDN image patterns + security headers
@@ -484,11 +483,27 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ## 🏆 Changelog
 
+### v0.3.3 — SVG Image Support
+- SVG images now upload and render in the blog (featured hero + article body)
+- `next.config.js`: `dangerouslyAllowSVG: true` + `contentDispositionType: 'attachment'` (SVG downloads instead of rendering inline) + `contentSecurityPolicy: "script-src 'none'"` (blocks scripts inside SVGs) — XSS-safe SVG support
+- New `app/utils/image.ts` helper detects `.svg` URLs so SVGs bypass the Next.js optimizer (`unoptimized`) — SVGs are resolution-independent and must not be resized/converted
+- AVIF added to the image optimizer `formats` so raster images are served as AVIF/WebP to supporting browsers
+- All raster formats (JPEG/PNG/WebP/GIF) still optimized through next/image unchanged
+- **Studio note:** SVG uploads are also gated by a Sanity project-level setting (Management API) — see the Image Formats section
+
+### v0.3.2 — Week 3 Task 2: SEO, Accessibility & Performance Hardening
+- Canonical URL (`<link rel="canonical">`) on every route — home, articles, categories, tags, and search
+- Full Twitter/X card metadata (`summary_large_image` default + per-article title/description/image)
+- Comment form accessibility: real `<label>`→`<input>` associations, inline error text with `aria-invalid`/`aria-describedby`, `noValidate`, `role="status"`/`role="alert"` feedback, decorative emoji hidden from assistive tech
+- Keyboard focus improvement: consistent purple `:focus-visible` outline site-wide (public + Studio) — visible keyboard focus without changing mouse behavior
+- Image optimization: LCP hero image is now `priority` (auto-preload, fetchpriority high); Portable Text images use intrinsic aspect-ratio containers with `fill` + `sizes` to prevent layout shift
+- Small fixes: homepage heading order (h3 section labels → h2) and small purple-500 text bumped to purple-600 in light mode for WCAG AA contrast
+- No new dependencies added
+
 ### v0.3.1 — Task 1 Submission Polish
 - Homepage now shows a friendly empty state when there are zero published posts
 - Tag schema validation: `name` (required, 1–40 chars) and `slug` (required) — no more empty Tags in Studio
 - Comment form: visible success/error feedback (server messages shown safely with a fallback) and a loading state on the submit button
-- Evidence: technical check outputs (lint / tsc / build) saved under `screenshots/week3/task1/technical-evidence/`
 - Audit fixes only — no features rebuilt, no new dependencies added
 
 ### v0.3.0 — Maintenance & Polish
@@ -582,6 +597,20 @@ A modern, full-stack developer publication platform for practical articles about
 
 ## 🗄️ Data Models
 
+### 🌄 Image Formats
+
+The blog accepts **all common image formats** for featured and article images:
+
+| Format | Upload (Sanity) | Rendered via |
+|---|---|---|
+| JPEG, PNG, WebP, GIF | ✅ supported | `next/image` optimizer (AVIF/WebP conversion) |
+| **SVG** | ✅ supported | `next/image` with `unoptimized` (served as-is, no conversion) |
+
+- Raster images are auto-served in the best format (AVIF → WebP → original) and responsively resized.
+- SVGs bypass the optimizer (`unoptimized`) since they are resolution-independent — never resized or scripted (see the XSS-safe config in `next.config.js`).
+- **Sanity project setting:** SVG uploads are also gated by Sanity's Management API. If Studio still rejects `.svg` files, enable them at:
+  `sanity.io/manage` → project → Settings → Media → enable SVG uploads (or run `npx sanity project enable-svg-uploads`).
+
 ### `category` (new)
 | Field | Type | Validation |
 |---|---|---|
@@ -633,11 +662,30 @@ NEXT_PUBLIC_SANITY_DATASET
 SANITY_TOKEN        # server-side only
 ```
 
-## 📸 Screenshots
-
-Stored under `/screenshots/week3/task1/`.
-
 ## 🌐 Live Demo & Repository
 
 - **Live Demo:** https://aui-blogo.vercel.app/
 - **Repository:** https://github.com/afaqulislam/AUI-Blogo
+
+---
+
+# 📘 Week 3 — Task 2: SEO, Accessibility & Performance Hardening
+
+This section documents the Week 3 Task 2 pass: 5 targeted improvements (canonical URLs, Twitter/social metadata, comment form accessibility, keyboard focus visibility, and image performance) plus small correctness fixes. No features were rebuilt and no new dependencies were added.
+
+## 🎯 What Changed
+
+| # | Improvement | Details |
+|---|---|---|
+| 1 | **Canonical URLs** | `<link rel="canonical">` on `/`, `/posts/[slug]`, `/categories`, `/category/[slug]`, `/tag`, `/tag/[slug]`, and `/search` — resolves against `metadataBase` |
+| 2 | **Twitter/social metadata** | Default `twitter:card = summary_large_image` site-wide; per-article title/description (and image when the post has one) |
+| 3 | **Comment form accessibility** | Labeled inputs, inline errors with `aria-invalid`/`aria-describedby`, `noValidate`, `role="status"`/`role="alert"` feedback, decorative emoji `aria-hidden` |
+| 4 | **Keyboard focus visibility** | Global `:focus-visible` purple outline (public + Studio) — keyboard users see focus, mouse users see no change |
+| 5 | **Image performance** | Featured (LCP) image `priority`; article body images rendered with intrinsic aspect ratio + `fill` + `sizes` — no layout shift |
+
+## 🧪 Testing
+
+- `npx tsc --noEmit` ✅ passes
+- `npm run lint` ✅ passes
+- `npm run build` ✅ passes (all 10 routes)
+- Rendered-HTML checks on the production server confirmed canonical + `twitter:card` metadata on home and article pages

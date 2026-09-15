@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Post } from "../utils/interface";
 import { dedupeTags } from "../utils/helpers";
+import { isSvgUrl } from "../utils/image";
 import { urlForImage } from "@/sanity/lib/image";
 import Image from "next/image";
 import { RiCalendarLine, RiFolderLine } from "react-icons/ri";
@@ -21,6 +22,8 @@ const FeaturedPost = ({ post }: Props) => {
               src={urlForImage(firstImage).url()}
               alt={firstImage.alt || post.title}
               fill
+              priority
+              unoptimized={isSvgUrl(urlForImage(firstImage).url())}
               className="object-cover group-hover:scale-105 transition-transform duration-300"
               sizes="(max-width: 768px) 100vw, 768px"
             />

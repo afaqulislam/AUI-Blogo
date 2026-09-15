@@ -42,11 +42,14 @@ export const revalidate = 60;
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const query = searchParams?.q || "";
   if (!query) {
-    return { title: "Search" };
+    return { title: "Search", alternates: { canonical: "/search" } };
   }
   return {
     title: `Search: ${query}`,
     description: `Search results for "${query}" on AUI Blogo`,
+    alternates: {
+      canonical: "/search",
+    },
   };
 }
 

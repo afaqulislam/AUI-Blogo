@@ -26,6 +26,9 @@ export const revalidate = 60;
 export const metadata: Metadata = {
   title: "Tags",
   description: "Browse all article tags on AUI Blogo",
+  alternates: {
+    canonical: "/tag",
+  },
 };
 
 const page = async () => {

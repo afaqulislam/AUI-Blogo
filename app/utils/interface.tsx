@@ -10,6 +10,15 @@ export interface Post {
   headings?: Array<HTMLHeadElement | string>;
   comments?: Array<Comment>;
   image?: any;
+  bodyImages?: Array<{
+    _key?: string;
+    asset?: {
+      _id?: string;
+      metadata?: {
+        dimensions?: { width?: number; height?: number };
+      };
+    };
+  }>;
 }
 
 export interface Tag {
