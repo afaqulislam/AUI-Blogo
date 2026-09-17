@@ -1,6 +1,6 @@
 "use client";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface Props {
   postId: string;
@@ -9,6 +9,24 @@ interface Props {
 const AddComment = ({ postId }: Props) => {
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [feedback, setFeedback] = useState("");
+  const clearTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const showFeedback = (message: string, type: "success" | "error") => {
+    if (clearTimer.current) clearTimeout(clearTimer.current);
+    setFeedback(message);
+    setStatus(type);
+    clearTimer.current = setTimeout(() => {
+      setFeedback("");
+      setStatus("idle");
+      clearTimer.current = null;
+    }, 4000);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (clearTimer.current) clearTimeout(clearTimer.current);
+    };
+  }, []);
 
   const {
     register,
@@ -29,8 +47,7 @@ const AddComment = ({ postId }: Props) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, comment, postId }),
       });
-
-      if (!res.ok) {
+if (!res.ok) {
         let message = "Unable to submit your comment. Please try again.";
         try {
           const body = await res.json();
@@ -40,17 +57,14 @@ const AddComment = ({ postId }: Props) => {
         } catch {
           // response not parseable — fall back to the default message
         }
-        setFeedback(message);
-        setStatus("error");
+        showFeedback(message, "error");
         return;
       }
 
       reset();
-      setFeedback("Comment submitted successfully!");
-      setStatus("success");
+      showFeedback("Comment submitted successfully!", "success");
     } catch {
-      setFeedback("Unable to submit your comment. Please try again.");
-      setStatus("error");
+      showFeedback("Unable to submit your comment. Please try again.", "error");
     }
   };
 
