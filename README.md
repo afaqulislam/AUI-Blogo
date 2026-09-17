@@ -72,10 +72,11 @@ It provides everything a developer blog needs out of the box: rich-text renderin
 | 🔗 **Share / Copy Link** | Share buttons with clipboard copy per article |
 | ➡️ **Prev / Next Navigation** | Article-to-article navigation on detail pages |
 | 🔀 **Related Articles** | Related posts shown by shared category |
-| 🔎 **SEO + JSON-LD** | Dynamic `generateMetadata` per post plus Article structured data (BlogPosting schema) |
+| 🔎 **SEO + JSON-LD** | Dynamic `generateMetadata` per post, canonical URLs, Twitter/X `summary_large_image` cards, plus Article structured data (BlogPosting schema) |
 | 🗺️ **Sitemap & Robots** | Auto-generated `/sitemap.xml` and `/robots.txt` |
 | ⚡ **ISR** | Pages revalidate every 60 seconds for near-real-time content updates without full rebuilds |
-| 🖼️ **Optimized Images** | Next.js `<Image>` with Sanity CDN (`cdn.sanity.io`) remote patterns + required alt text |
+| 🖼️ **Optimized Images** | Next.js `<Image>` with Sanity CDN; AVIF/WebP auto-conversion; SVG support (XSS-safe, unoptimized); required alt text |
+| 🎯 **Keyboard Focus** | Consistent purple `:focus-visible` outline on all interactive elements — keyboard users see focus, mouse behavior unchanged |
 | 🎨 **Sanity Studio** | Embedded Sanity Studio at `/studio` with Vision (GROQ playground), branded blog logo, custom sidebar structure, and theme that follows the site |
 | 📋 **Form Validation** | Comment form uses `react-hook-form` with email pattern and min-length validation |
 | ⚠️ **Error / Empty States** | Graceful empty, error, and not-found states across all pages (incl. a dedicated homepage empty state when no posts exist) |
@@ -174,6 +175,7 @@ aui-blogo/
 │   │   ├── AdminThemeSync.tsx     # Bidirectional Studio ↔ site theme sync
 │   │   ├── Provider.tsx           # next-themes ThemeProvider wrapper
 │   │   ├── helpers.ts             # Utility: slugify()
+│   │   ├── image.ts               # Utility: isSvgUrl() for SVG-aware image rendering
 │   │   └── interface.tsx          # TypeScript interfaces: Post, Tag, Comment, Category
 │   ├── global-error.tsx           # Global error boundary
 │   ├── robots.ts                  # Auto-generated robots.txt rules
