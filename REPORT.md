@@ -15,6 +15,18 @@ AUI Blogo is a modern, full-stack developer publication platform for practical a
 
 The task requires evolving the existing blog into a clearly demonstrable full-stack platform featuring: responsive public home, article details, **categories**, **search**, admin create/edit interfaces, persistent data, reusable components, form validation, responsive usability, testing/evidence, documentation, and reflection.
 
+**Task 2 requirements (accessibility, SEO & performance):**
+
+| # | Requirement | What was delivered |
+|---|---|---|
+| 1 | **Canonical URLs** | `<link rel="canonical">` on every page route |
+| 2 | **Twitter / Social metadata** | `summary_large_image` cards on home + per-article |
+| 3 | **Comment form accessibility** | Labeled inputs, `aria-invalid`, `aria-describedby`, `role="status"`/`"alert"` feedback |
+| 4 | **Keyboard focus visibility** | Global `:focus-visible` purple outline (public + Studio) |
+| 5 | **Image optimization** | `priority` on hero LCP; responsive aspect-ratio containers for body images; SVG support via `unoptimized` |
+| 6 | **Image format support** | SVGs render (unoptimized, XSS-safe); AVIF added to optimizer formats |
+| 7 | **Additional fixes** | Homepage heading order (h3→h2), purple-500→purple-600 contrast fix |
+
 ## 3. Existing AUI-Blogo Audit
 
 Before any modification, the existing codebase was fully inspected. Summary of what already existed:

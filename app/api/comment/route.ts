@@ -71,8 +71,14 @@ export async function POST(req: Request) {
 
   try {
     if (!process.env.SANITY_TOKEN) {
+      console.error(
+        "Comment rejected: SANITY_TOKEN is not set in this environment."
+      );
       return NextResponse.json(
-        { message: "Server is not configured for comments yet" },
+        {
+          message:
+            "The server is missing the SANITY_TOKEN environment variable. Add it under Vercel project Settings → Environment Variables, then redeploy.",
+        },
         { status: 500 }
       );
     }
