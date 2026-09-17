@@ -328,14 +328,16 @@ const page = async ({ params, searchParams }: Params) => {
       )}
 
       {/* Comments */}
-      <section className="max-w-2xl mx-auto w-full mt-12 pt-8 border-t border-gray-300 dark:border-purple-900" aria-label="Comments">
-        <AddComment postId={post?._id} />
-        <h3 className="text-lg font-semibold mb-4">All Comments</h3>
-        <AllComments
-          comments={post?.comments || []}
-          slug={post?.slug?.current}
-          commentsOrder={commentsOrder}
-        />
+      <section className="mt-12 pt-8 border-t border-gray-300 dark:border-purple-900" aria-label="Comments">
+        <div className="max-w-2xl mx-auto w-full">
+          <AddComment postId={post?._id} />
+          <h3 className="text-lg font-semibold mb-4">All Comments</h3>
+          <AllComments
+            comments={post?.comments || []}
+            slug={post?.slug?.current}
+            commentsOrder={commentsOrder}
+          />
+        </div>
       </section>
     </div>
   );
