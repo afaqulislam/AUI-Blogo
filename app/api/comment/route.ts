@@ -70,19 +70,6 @@ export async function POST(req: Request) {
   }
 
   try {
-    if (!process.env.SANITY_TOKEN) {
-      console.error(
-        "Comment rejected: SANITY_TOKEN is not set in this environment."
-      );
-      return NextResponse.json(
-        {
-          message:
-            "The server is missing the SANITY_TOKEN environment variable. Add it under Vercel project Settings → Environment Variables, then redeploy.",
-        },
-        { status: 500 }
-      );
-    }
-
     const newComment = await writeClient.create({
       _type: "comment",
       name,
@@ -98,6 +85,7 @@ export async function POST(req: Request) {
       { status: 201 }
     );
   } catch (error) {
+    console.error("Comment create failed:", error);
     return NextResponse.json(
       { message: "Failed to create a comment" },
       { status: 500 }
