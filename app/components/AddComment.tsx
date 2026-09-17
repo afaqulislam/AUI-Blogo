@@ -56,9 +56,9 @@ const AddComment = ({ postId }: Props) => {
 
   return (
     <div className="mt-1">
-      <p>
+      <h3 className="text-lg font-semibold mb-4">
         Leave a comment <span aria-hidden="true">💬</span>
-      </p>
+      </h3>
       {status === "success" && (
         <p
           role="status"
