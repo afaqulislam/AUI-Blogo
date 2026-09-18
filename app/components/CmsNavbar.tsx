@@ -3,7 +3,7 @@ import { BackArrowIcon } from "./Icons";
 
 const CmsNavbar = () => {
   return (
-    <div className="bg-white dark:bg-[#16171a]">
+    <div className="bg-white dark:bg-[#13141b]">
       <div className="mx-auto max-w-5xl px-6">
         <nav
           className="flex justify-between items-center h-16 w-full"

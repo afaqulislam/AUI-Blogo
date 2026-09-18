@@ -20,7 +20,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-white dark:bg-[#16171a] text-indigo-950 dark:text-white selection:bg-purple-500 selection:text-white dark:selection:bg-purple-500 dark:selection:text-white">
+      <body className="bg-white dark:bg-[#13141b] text-indigo-950 dark:text-white selection:bg-purple-500 selection:text-white dark:selection:bg-purple-500 dark:selection:text-white">
         <Provider>
           <AdminThemeSync />
           <CmsNavbar />
