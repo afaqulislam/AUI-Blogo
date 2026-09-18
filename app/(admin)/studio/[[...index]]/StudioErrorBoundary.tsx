@@ -32,7 +32,7 @@ export class StudioErrorBoundary extends React.Component<Props, State> {
 
   render() {
     if (this.state.hasError) {
-      return <div className="p-6 text-sm text-indigo-950 dark:text-amber-50">Reloading Studio&hellip;</div>;
+      return <div className="p-6 text-sm text-indigo-950 dark:text-white">Reloading Studio&hellip;</div>;
     }
     return this.props.children;
   }
