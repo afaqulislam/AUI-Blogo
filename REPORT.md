@@ -39,9 +39,9 @@ Before any modification, the existing codebase was fully inspected. Summary of w
 
 ## 4. Improvements Implemented
 
-1. **Categories** — new `category` schema (name, slug, description); `post` now has a required `category` reference; routes `/categories` and `/category/[slug]`.
+1. **Categories** — new `category` schema (name, slug, description); `post` has an optional `category` reference; routes `/categories` and `/category/[slug]`.
 2. **Search** — new `/search?q=` route with GROQ server-side case-insensitive matching on title, excerpt, tags, and category; no-results state; clear button; shareable URL.
-3. **Validation** — strengthened all Sanity rules: title (10–120), slug required, excerpt required (≤200), body required, category required, image alt text required, publishedAt required.
+3. **Validation** — strengthened all Sanity rules: title (10–120), slug required, excerpt required (≤200), body required, image alt text required, publishedAt required (category optional).
 4. **Reusable components** — added ArticleGrid, SearchBar, CategoryCard, FeaturedPost, ShareButton, EmptyState; refactored existing components (PostComponent now shows category + date with semantic structure).
 5. **Article detail upgrade** — added share/copy link, prev/next navigation, related-articles section, breadcrumb, tags as links.
 6. **Structured data** — added JSON-LD `BlogPosting` schema to article pages; Open Graph now includes the article image.
@@ -94,7 +94,7 @@ Via embedded Sanity Studio at `/studio`:
 
 ## 9. Categories
 
-A real `category` document type with `name`, `slug`, and `description`. Every post has one required primary category. Categories are browsable at `/categories` and `/category/[slug]`, each showing description, article count, and an article grid. GROQ references are used properly.
+A real `category` document type with `name`, `slug`, and `description`. Posts may optionally have one primary category. Categories are browsable at `/categories` and `/category/[slug]`, each showing description, article count, and an article grid. GROQ references are used properly.
 
 ## 10. Search
 
@@ -102,7 +102,7 @@ A real `category` document type with `name`, `slug`, and `description`. Every po
 
 ## 11. Form Validation
 
-- **Admin (Sanity):** title (10–120 required), slug (required), excerpt (required, ≤200), body (required), category (required), image alt (required), publishedAt (required) — plus tag schema validation (name required 1–40 chars, slug required).
+- **Admin (Sanity):** title (10–120 required), slug (required), excerpt (required, ≤200), body (required), image alt (required), publishedAt (required), category (optional) — plus tag schema validation (name required 1–40 chars, slug required).
 - **Public comments:** server-side validation in `/api/comment` (required fields, email regex, min/max caps) plus client-side `react-hook-form` validation in `AddComment`.
 - **Comment feedback:** users see a visible success message ("Comment submitted successfully!") on success, server error messages surface safely (with a clear fallback) on failure, and the submit button shows a loading state and is disabled during submission.
 

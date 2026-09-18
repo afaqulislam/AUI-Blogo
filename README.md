@@ -266,7 +266,7 @@ aui-blogo/
 | `slug` | `slug` | URL-safe identifier (auto-generated, required) |
 | `excerpt` | `string` | Short post summary for listings & SEO (max 200, required) |
 | `publishedAt` | `datetime` | Publication date (required) |
-| `category` | `reference` | Primary Category reference (required) |
+| `category` | `reference` | Primary Category reference (optional) |
 | `body` | `array` (Portable Text) | Rich content blocks (text, headings, images with alt) |
 | `tags` | `array<reference>` | References to Tag documents |
 
@@ -519,7 +519,7 @@ This project is open source and available under the [MIT License](LICENSE).
 ### v0.2.0 — Week 3 Task 1: Full-Stack Blog Platform Upgrade
 - Added `category` content model with `/categories` and `/category/[slug]` routes
 - Added `/search?q=` GROQ-powered search with no-results state
-- Strengthened post validation (title min/max, excerpt, body, category, image alt required)
+- Strengthened post validation (title min/max, excerpt, body, image alt required; category optional)
 - Added reusable components: ArticleGrid, SearchBar, CategoryCard, FeaturedPost, ShareButton, EmptyState
 - Added share/copy-link, prev/next navigation, and related articles on post detail
 - Added JSON-LD `BlogPosting` structured data
@@ -573,7 +573,7 @@ A modern, full-stack developer publication platform for practical articles about
 | 🔍 **Search** | Server-side GROQ search at `/search?q=term` with case-insensitive title/excerpt/tag/category matching |
 | 🧭 **Category Routes** | `/categories` listing + `/category/[slug]` detail with post counts |
 | 🖥️ **Admin Workflow** | Create, edit, publish, and delete posts/categories/tags via embedded Sanity Studio |
-| ✅ **Validation** | Title (10–120 chars), slug (required/unique), excerpt (required, ≤200), body (required), category (required), image alt text (required) |
+| ✅ **Validation** | Title (10–120 chars), slug (required/unique), excerpt (required, ≤200), body (required), image alt text (required); category optional |
 | 🔗 **Sharing** | Share + copy-link buttons on every article |
 | ➡️ **Prev/Next & Related** | Article navigation and related-posts section |
 | 📄 **Structured Data** | JSON-LD `BlogPosting` schema for SEO |
