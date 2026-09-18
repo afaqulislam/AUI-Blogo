@@ -8,6 +8,16 @@ interface Props {
   commentsOrder: string;
 }
 
+const formatCommentDate = (createdAt: string) =>
+  new Intl.DateTimeFormat(undefined, {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(new Date(createdAt));
+
 const AllComments = ({ comments, slug, commentsOrder }: Props) => {
   return (
     <div>
@@ -39,7 +49,7 @@ const AllComments = ({ comments, slug, commentsOrder }: Props) => {
           <p>
             <strong>{comment?.name}</strong>{" "}
             <span className="text-gray-500 text-sm">
-              {new Date(comment?._createdAt).toLocaleString()}
+              {formatCommentDate(comment?._createdAt)}
             </span>
           </p>
           <p>{comment?.comment}</p>
