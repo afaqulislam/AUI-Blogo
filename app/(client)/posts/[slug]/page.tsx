@@ -303,7 +303,7 @@ const page = async ({ params, searchParams }: Params) => {
 
       {/* Related Posts */}
       {relatedPosts?.length > 0 && (
-        <section className="mt-12 pt-8 border-t border-gray-300 dark:border-purple-900" aria-label="Related articles">
+        <section className="mt-12 pt-8 pb-8 border-t border-b border-gray-300 dark:border-purple-900" aria-label="Related articles">
           <h3 className="text-lg font-semibold mb-4">Related Articles</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {relatedPosts.map((rp: Post) => (
